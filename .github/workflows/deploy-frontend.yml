@@ -1,0 +1,122 @@
+name: Deploy Frontend to VPS
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker Image Tag (z.B. latest, 0.0.1, master-abc1234)'
+        required: true
+        default: 'latest'
+        type: string
+      restart_policy:
+        description: 'Container Restart Policy'
+        required: false
+        default: 'unless-stopped'
+        type: choice
+        options:
+          - unless-stopped
+          - always
+          - no
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-frontend
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Add SSH private key to agent
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy Frontend Container to VPS
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          APP_DIR: ${{ secrets.APP_DIR }}
+          IMAGE_TAG: ${{ inputs.image_tag }}
+          RESTART_POLICY: ${{ inputs.restart_policy }}
+          FULL_IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.image_tag }}
+        run: |
+          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "
+            set -e
+            
+            echo '--> Starte Deployment von Frontend...'
+            echo 'Image: $FULL_IMAGE_NAME'
+            
+            mkdir -p $APP_DIR
+            cd $APP_DIR
+            
+            echo 'Logging in to GitHub Container Registry...'
+            echo '${{ secrets.GITHUB_TOKEN }}' | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
+            
+            # Erstelle Docker-Netzwerk falls nicht vorhanden
+            echo '🌐 Prüfe Docker-Netzwerk...'
+            if ! docker network ls | grep -q cvmanager-network; then
+              echo 'Erstelle Docker-Netzwerk cvmanager-network...'
+              docker network create cvmanager-network
+            else
+              echo 'Docker-Netzwerk cvmanager-network existiert bereits'
+            fi
+            
+            # Stoppe und entferne alten Container (falls vorhanden)
+            echo '--> Stoppe alten Container...'
+            docker stop cvmanager-frontend 2>/dev/null || true
+            docker rm cvmanager-frontend 2>/dev/null || true
+            
+            echo '--> Pulling Image $FULL_IMAGE_NAME...'
+            docker pull $FULL_IMAGE_NAME
+            
+            echo '--> Starte neuen Container...'
+            docker run -d \
+              --name cvmanager-frontend \
+              --restart $RESTART_POLICY \
+              --network cvmanager-network \
+              -p 8080:80 \
+              $FULL_IMAGE_NAME
+            
+            # Warte kurz und prüfe Status
+            sleep 3
+            
+            if docker ps | grep -q cvmanager-frontend; then
+              echo '✅ Container läuft erfolgreich!'
+              docker ps --filter name=cvmanager-frontend --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+              echo ''
+              echo '--> Netzwerk-Info:'
+              docker network inspect cvmanager-network --format '{{range .Containers}}Container: {{.Name}} | IP: {{.IPv4Address}}{{println}}{{end}}'
+            else
+              echo '❌ Container konnte nicht gestartet werden!'
+              docker logs cvmanager-frontend
+              exit 1
+            fi
+            
+            # Aufräumen alter Images (optional)
+            echo '--> Räume alte Images auf...'
+            docker image prune -f
+            
+            echo '--> Deployment abgeschlossen!'
+          "
+
+      - name: Deployment Summary
+        if: success()
+        run: |
+          echo "### 🎉 Frontend erfolgreich deployed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Server:** \`${{ secrets.SERVER_IP }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.image_tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Container:** \`cvmanager-frontend\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Network:** \`cvmanager-network\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Port:** \`8080\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Die App sollte nun erreichbar sein!" >> $GITHUB_STEP_SUMMARY
+
+      - name: Deployment Failed
+        if: failure()
+        run: |
+          echo "### ❌ Deployment fehlgeschlagen!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Bitte die Logs oben für Details prüfen." >> $GITHUB_STEP_SUMMARY
