@@ -42,6 +42,8 @@ jobs:
           RESTART_POLICY: ${{ inputs.restart_policy }}
           FULL_IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.image_tag }}
         run: |
+          IMAGE_NAME_LOWER=$(echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.image_tag }}" | tr '[:upper:]' '[:lower:]')
+
           ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "
             set -e
             
@@ -68,7 +70,6 @@ jobs:
             docker stop cvmanager-frontend 2>/dev/null || true
             docker rm cvmanager-frontend 2>/dev/null || true
             
-            IMAGE_NAME_LOWER=$(echo "$FULL_IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
             echo '--> Pulling Image $IMAGE_NAME_LOWER...'
             docker pull $IMAGE_NAME_LOWER
             
