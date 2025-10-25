@@ -68,8 +68,9 @@ jobs:
             docker stop cvmanager-frontend 2>/dev/null || true
             docker rm cvmanager-frontend 2>/dev/null || true
             
-            echo '--> Pulling Image $FULL_IMAGE_NAME...'
-            docker pull $FULL_IMAGE_NAME
+            IMAGE_NAME_LOWER=$(echo "$FULL_IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
+            echo '--> Pulling Image $IMAGE_NAME_LOWER...'
+            docker pull $IMAGE_NAME_LOWER
             
             echo '--> Starte neuen Container...'
             docker run -d \
@@ -77,7 +78,7 @@ jobs:
               --restart $RESTART_POLICY \
               --network cvmanager-network \
               -p 8080:80 \
-              $FULL_IMAGE_NAME
+              $IMAGE_NAME_LOWER
             
             # Warte kurz und prüfe Status
             sleep 3
