@@ -1,4 +1,4 @@
-@use "tailwindcss";
+
 
 :root {
   --body-bg: var(--p-surface-50);
@@ -20,9 +20,7 @@
   --overlay-background: var(--p-surface-900);
 }
 
-html {
-  font-size: 14px;
-}
+
 
 body {
   margin: 0px;
