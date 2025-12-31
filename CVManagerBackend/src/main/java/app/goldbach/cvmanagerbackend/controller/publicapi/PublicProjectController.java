@@ -1,23 +1,23 @@
-package app.goldbach.cvmanagerbackend.controller;
+package app.goldbach.cvmanagerbackend.controller.publicapi;
 
+import app.goldbach.cvmanagerbackend.mapping.publicapi.PublicProjectMapper;
 import app.goldbach.cvmanagerbackend.model.Project;
 import app.goldbach.cvmanagerbackend.service.ProjectService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/projects")
+@RequestMapping("/api/public/projects")
 @RequiredArgsConstructor
-public class ProjectController {
+public class PublicProjectController {
 
     private final ProjectService projectService;
+    private final PublicProjectMapper projectMapper;
+    
     @GetMapping
     public List<Project> getAllProjects() {
         return projectService.getAllProjects();
     }
-    
 }
