@@ -17,10 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class PrivateProjectController {
 
     private final ProjectService projectService;
+
     @PostMapping
     public ResponseEntity<Void> addProject(@RequestBody PrivateProjectDto privateProjectDto) {
         Project project = ProjectMapper.INSTANCE.toEntity(privateProjectDto);
-        
+
         projectService.createProject(project);
         return ResponseEntity.ok().build();
     }
