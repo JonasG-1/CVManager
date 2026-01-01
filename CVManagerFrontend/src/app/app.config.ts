@@ -4,6 +4,7 @@ import {providePrimeNG} from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 
 import {routes} from './app.routes';
+import {provideKeycloak} from 'keycloak-angular';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,6 +20,17 @@ export const appConfig: ApplicationConfig = {
           cssLayer: false
         }
       }
-    })
+    }),
+    provideKeycloak({
+      config: {
+        url: 'http://localhost:8081/',
+        realm: 'cv-manager',
+        clientId: 'cv-manager-client'
+      },
+      initOptions: {
+        onLoad: 'check-sso',
+        silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html'
+      }
+    }),
   ]
 };
