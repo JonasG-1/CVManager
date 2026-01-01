@@ -19,12 +19,24 @@ public class Project {
     private Long id;
 
     private String name;
-    
+
     private String description;
-    
+
     private String link;
-    
+
     private LocalDate startDate;
-    
+
     private LocalDate endDate;
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", link='" + link + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
+    }
 }

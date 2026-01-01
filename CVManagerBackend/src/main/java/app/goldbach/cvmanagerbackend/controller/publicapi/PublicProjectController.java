@@ -1,6 +1,7 @@
 package app.goldbach.cvmanagerbackend.controller.publicapi;
 
-import app.goldbach.cvmanagerbackend.mapping.publicapi.PublicProjectMapper;
+import app.goldbach.cvmanagerbackend.dto.publicapi.PublicProjectDto;
+import app.goldbach.cvmanagerbackend.mapping.ProjectMapper;
 import app.goldbach.cvmanagerbackend.model.Project;
 import app.goldbach.cvmanagerbackend.service.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +15,9 @@ import java.util.List;
 public class PublicProjectController {
 
     private final ProjectService projectService;
-    private final PublicProjectMapper projectMapper;
     
     @GetMapping
-    public List<Project> getAllProjects() {
-        return projectService.getAllProjects();
+    public List<PublicProjectDto> getAllProjects() {
+        return ProjectMapper.INSTANCE.toPublicDtos(projectService.getAllProjects());
     }
 }
