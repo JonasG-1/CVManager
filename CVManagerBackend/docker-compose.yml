@@ -3,13 +3,59 @@ services:
     image: postgres:15-alpine
     container_name: postgres-db
     environment:
-      - POSTGRES_USER=cvmanager-user
-      - POSTGRES_PASSWORD=ChangeThisPasswordInProduction!
-      - POSTGRES_DB=cvmanager_db
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend_network
+
+  keycloak-db:
+    image: postgres:15-alpine
+    container_name: keycloak-db
+    volumes:
+      - keycloak_postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${KC_DB_NAME}
+      POSTGRES_USER: ${KC_DB_USER}
+      POSTGRES_PASSWORD: ${KC_DB_PASSWORD}
+    networks:
+      - keycloak_network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.6
+    container_name: keycloak
+    command: start-dev # 'start-dev' ist besser für die lokale Entwicklung
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8081
+      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HEALTH_ENABLED: true
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db/${KC_DB_NAME}
+      KC_DB_USERNAME: ${KC_DB_USER}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+    ports:
+      - "8081:8080"
+    restart: always
+    depends_on:
+      - keycloak-db
+    networks:
+      - keycloak_network
 
 volumes:
   postgres_data:
+  keycloak_postgres_data:
+
+networks:
+  keycloak_network:
+    driver: bridge
+  backend_network:
+    driver: bridge
