@@ -24,21 +24,34 @@ export class ProfileMenu {
       this.loggedIn = this.authManager.authenticated();
       this.items = [
         {
-          label: 'Profile',
-          icon: 'pi pi-user',
-          visible: this.loggedIn
-        },
-        {
-          label: 'Anmelden',
-          icon: 'pi pi-sign-in',
-          command: () => this.authManager.login(),
-          visible: !this.loggedIn
-        },
-        {
-          label: 'Logout',
-          icon: 'pi pi-sign-out',
-          command: () => this.authManager.logout(),
-          visible: this.loggedIn
+          label: 'Profil',
+          items: [
+            {
+              label: 'Mein Profil',
+              icon: 'pi pi-user-edit',
+              visible: this.loggedIn,
+              routerLink: '/profile' // Passe den Pfad bei Bedarf an
+            },
+            {
+              label: 'Kontoverwaltung',
+              icon: 'pi pi-cog',
+              visible: this.loggedIn,
+              routerLink: '/account'
+            },
+            {
+              label: 'Projekte',
+              icon: 'pi pi-briefcase',
+              visible: this.loggedIn,
+              routerLink: '/user/projects'
+            },
+            {
+              label: this.loggedIn ? 'Abmelden' : 'Anmelden',
+              icon: this.loggedIn ? 'pi pi-sign-out' : 'pi pi-sign-in',
+              visible: true,
+              command: () => this.loggedIn ? this.authManager.logout() : this.authManager.login(),
+              linkClass: this.loggedIn ? '!text-red-500 dark:!text-red-400' : ''
+            }
+          ]
         }
       ];
     });

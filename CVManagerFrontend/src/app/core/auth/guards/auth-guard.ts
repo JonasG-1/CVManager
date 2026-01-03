@@ -21,6 +21,8 @@ const isAccessAllowed = async (
     return true;
   }
 
+  console.log('User is not allowed to access this route.');
+
   const router = inject(Router);
   return router.parseUrl('/forbidden');
 };
