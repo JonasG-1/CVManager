@@ -1,30 +1,6 @@
 <!-- Background -->
 
-<div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-  <!-- Base gradient -->
-  <div class="absolute inset-0 bg-linear-to-b from-slate-950 via-slate-900 to-slate-950"></div>
-
-  <!-- Glow blobs -->
-  <div
-    class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-500/35 via-fuchsia-500/30 to-cyan-400/25 blur-3xl"
-  ></div>
-  <div
-    class="absolute top-40 -left-48 h-[460px] w-[460px] rounded-full bg-gradient-to-tr from-emerald-400/20 via-sky-500/20 to-indigo-500/20 blur-3xl"
-  ></div>
-  <div
-    class="absolute bottom-[-220px] right-[-220px] h-[520px] w-[520px] rounded-full bg-gradient-to-tr from-pink-500/20 via-purple-500/15 to-indigo-500/20 blur-3xl"
-  ></div>
-
-  <!-- Subtle grid -->
-  <div
-    class="absolute inset-0 opacity-[0.08]"
-    style="
-        background-image: linear-gradient(to right, rgb(255 255 255 / 0.6) 1px, transparent 1px),
-          linear-gradient(to bottom, rgb(255 255 255 / 0.6) 1px, transparent 1px);
-        background-size: 64px 64px;
-      "
-  ></div>
-</div>
+<app-background></app-background>
 
 <app-header></app-header>
 
