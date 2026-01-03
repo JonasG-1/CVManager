@@ -33,6 +33,7 @@
     "keycloak-angular": "^21.0.0",
     "keycloak-js": "^26.2.2",
     "postcss": "^8.5.6",
+    "primeicons": "^7.0.0",
     "primeng": "^21.0.1",
     "quill": "^2.0.3",
     "rxjs": "~7.8.0",
