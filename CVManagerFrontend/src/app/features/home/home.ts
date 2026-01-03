@@ -13,7 +13,7 @@ import {Header} from '../../shared/header/header';
   selector: 'app-home',
   templateUrl: './home.html',
   styleUrl: './home.css',
-  imports: [Menubar, BadgeModule, AvatarModule, InputTextModule, Ripple, CommonModule, ButtonModule, Header]
+  imports: [BadgeModule, AvatarModule, InputTextModule, CommonModule, ButtonModule, Header]
 })
 export class Home {
 

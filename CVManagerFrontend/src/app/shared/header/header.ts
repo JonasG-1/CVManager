@@ -11,7 +11,6 @@ import {ProfileMenu} from '../profile-menu/profile-menu';
 @Component({
   selector: 'app-header',
   imports: [
-    Avatar,
     Badge,
     InputText,
     Menubar,

@@ -4,7 +4,16 @@ import {providePrimeNG} from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 
 import {routes} from './app.routes';
-import {provideKeycloak} from 'keycloak-angular';
+import {
+  createInterceptorCondition,
+  INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG, IncludeBearerTokenCondition, includeBearerTokenInterceptor, provideKeycloak
+} from 'keycloak-angular';
+import {provideHttpClient, withInterceptors} from '@angular/common/http';
+
+const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
+  urlPattern: /^(http:\/\/localhost:8080)(\/.*)?$/i,
+  bearerPrefix: 'Bearer'
+});
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -30,7 +39,12 @@ export const appConfig: ApplicationConfig = {
       initOptions: {
         onLoad: 'check-sso',
         silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html'
-      }
+      },
     }),
+    {
+      provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+      useValue: [urlCondition]
+    },
+    provideHttpClient(withInterceptors([includeBearerTokenInterceptor]))
   ]
 };
