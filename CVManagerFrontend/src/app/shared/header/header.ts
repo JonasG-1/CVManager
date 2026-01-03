@@ -6,6 +6,7 @@ import {Menubar} from "primeng/menubar";
 import {Ripple} from "primeng/ripple";
 import {NgClass} from '@angular/common';
 import {MenuItem} from 'primeng/api';
+import {ProfileMenu} from '../profile-menu/profile-menu';
 
 @Component({
   selector: 'app-header',
@@ -15,7 +16,8 @@ import {MenuItem} from 'primeng/api';
     InputText,
     Menubar,
     Ripple,
-    NgClass
+    NgClass,
+    ProfileMenu
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
