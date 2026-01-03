@@ -36,6 +36,7 @@ export class AuthManager {
       if (keycloakEvent.type === KeycloakEventType.AuthLogout) {
         this._authenticated.set(false);
       }
+      console.log('User authentication state: ' + this._authenticated());
     });
   }
 }
