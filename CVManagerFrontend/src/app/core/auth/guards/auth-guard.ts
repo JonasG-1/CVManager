@@ -10,14 +10,16 @@ const isAccessAllowed = async (
   const { authenticated, grantedRoles } = authData;
 
   const requiredRole = route.data['role'];
+
   if (!requiredRole) {
-    return false;
+    return authenticated || inject(Router).parseUrl('/forbidden');
   }
 
   const hasRequiredRole = (role: string): boolean =>
     Object.values(grantedRoles.resourceRoles).some((roles) => roles.includes(role));
 
   if (authenticated && hasRequiredRole(requiredRole)) {
+    console.log('User is allowed to access this route.');
     return true;
   }
 

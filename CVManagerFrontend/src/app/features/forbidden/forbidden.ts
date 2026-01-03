@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
+import {Header} from '../../shared/header/header';
 
 @Component({
   selector: 'app-forbidden',
-  imports: [],
+  imports: [
+    Header
+  ],
   templateUrl: './forbidden.html',
   styleUrl: './forbidden.scss',
 })
