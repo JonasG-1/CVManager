@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import {Home} from './features/home/home';
-import {canActivateAuthRole} from './core/guards/auth-guard';
+import {canActivateAuthRole} from './core/auth/guards/auth-guard';
 export const routes: Routes = [
   {
     path: '',
